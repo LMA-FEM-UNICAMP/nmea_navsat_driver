@@ -31,6 +31,7 @@ def generate_launch_description():
     driver_node = actions.Node(
         package='nmea_navsat_driver',
         executable='nmea_tcpclient_driver',
+        namespace='obu',
         output='screen',
         parameters=[config_file])
     
