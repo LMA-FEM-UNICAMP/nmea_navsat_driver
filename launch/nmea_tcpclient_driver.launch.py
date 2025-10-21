@@ -20,18 +20,29 @@ import sys
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription, LaunchIntrospector, LaunchService
 from launch_ros import actions
+from launch.actions import ExecuteProcess
 
 
 def generate_launch_description():
     """Generate a launch description for a single tcpclient driver."""
     config_file = os.path.join(get_package_share_directory("nmea_navsat_driver"), "config", "nmea_tcpclient_driver.yaml")
+    gpspipe_script_path = os.path.join(get_package_share_directory("nmea_navsat_driver"), "scripts", "gpspipe_nmea.sh")
+    
     driver_node = actions.Node(
         package='nmea_navsat_driver',
         executable='nmea_tcpclient_driver',
         output='screen',
         parameters=[config_file])
+    
+    gpspipe_script = ExecuteProcess(
+        cmd=['bash', gpspipe_script_path],
+            output='screen'
+        )
 
-    return LaunchDescription([driver_node])
+    return LaunchDescription([
+        gpspipe_script,
+        driver_node
+        ])
 
 
 def main(argv):
