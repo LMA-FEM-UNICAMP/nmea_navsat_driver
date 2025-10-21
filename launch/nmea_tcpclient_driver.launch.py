@@ -30,7 +30,7 @@ def generate_launch_description():
     
     gps_ip_arg = DeclareLaunchArgument(
             name='gps_ip',
-            default_value='143.106.207.85',
+            default_value='192.168.140.6',
             description='IP of the GPS server')
     
     local_gps_port_arg = DeclareLaunchArgument(
