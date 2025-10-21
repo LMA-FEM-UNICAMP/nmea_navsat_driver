@@ -21,9 +21,26 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription, LaunchIntrospector, LaunchService
 from launch_ros import actions
 from launch.actions import ExecuteProcess
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, OpaqueFunction
+from launch.substitutions import LaunchConfiguration
+
 
 
 def generate_launch_description():
+    
+    gps_ip_arg = DeclareLaunchArgument(
+            name='gps_ip',
+            default_value='143.106.207.85',
+            description='IP of the GPS server')
+    
+    local_gps_port_arg = DeclareLaunchArgument(
+            name='local_gps_port',
+            default_value='5000',
+            description='Local GPS port for NMEA')
+    
+    gps_ip = LaunchConfiguration('gps_ip')
+    local_gps_port = LaunchConfiguration('local_gps_port')
+    
     """Generate a launch description for a single tcpclient driver."""
     config_file = os.path.join(get_package_share_directory("nmea_navsat_driver"), "config", "nmea_tcpclient_driver.yaml")
     gpspipe_script_path = os.path.join(get_package_share_directory("nmea_navsat_driver"), "scripts", "gpspipe_nmea.sh")
@@ -36,11 +53,13 @@ def generate_launch_description():
         parameters=[config_file])
     
     gpspipe_script = ExecuteProcess(
-        cmd=['bash', gpspipe_script_path],
+        cmd=[gpspipe_script_path, gps_ip, local_gps_port],
             output='screen'
         )
 
     return LaunchDescription([
+        gps_ip_arg,
+        local_gps_port_arg,
         gpspipe_script,
         driver_node
         ])

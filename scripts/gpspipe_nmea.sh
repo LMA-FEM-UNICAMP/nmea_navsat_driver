@@ -1,3 +1,13 @@
 #!/bin/bash
+# Usage: ./gps.sh <IP> <PORT>
 
-gpspipe -r -n -h 143.106.207.85 | nc -l -p 5000
+IP="$1"
+PORT="$2"
+
+# check arguments
+if [ -z "$IP" ] || [ -z "$PORT" ]; then
+    echo "Usage: $0 <IP> <PORT>"
+    exit 1
+fi
+
+gpspipe -r -n -h "$IP" | nc -l -p "$PORT"
