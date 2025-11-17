@@ -256,6 +256,19 @@ class Ros2NMEADriver(Node):
                 current_vel.twist.linear.x = data['speed'] * math.sin(data['true_course'])
                 current_vel.twist.linear.y = data['speed'] * math.cos(data['true_course'])
                 self.vel_pub.publish(current_vel)
+            
+            # Publish true_course as heading if available.
+            if data['true_course']:
+                current_heading = QuaternionStamped()
+                current_heading.header.stamp = current_time
+                current_heading.header.frame_id = frame_id
+                q = quaternion_from_euler(0, 0, math.radians(data['heading']))
+                current_heading.quaternion.x = q[0]
+                current_heading.quaternion.y = q[1]
+                current_heading.quaternion.z = q[2]
+                current_heading.quaternion.w = q[3]
+                self.heading_pub.publish(current_heading)
+                
         elif 'GST' in parsed_sentence:
             data = parsed_sentence['GST']
 
@@ -264,6 +277,7 @@ class Ros2NMEADriver(Node):
             self.lon_std_dev = data['lon_std_dev']
             self.lat_std_dev = data['lat_std_dev']
             self.alt_std_dev = data['alt_std_dev']
+            
         elif 'HDT' in parsed_sentence:
             data = parsed_sentence['HDT']
             if data['heading']:
