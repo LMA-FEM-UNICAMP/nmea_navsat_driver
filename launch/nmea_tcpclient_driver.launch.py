@@ -38,8 +38,14 @@ def generate_launch_description():
             default_value='5000',
             description='Local GPS port for NMEA')
     
+    ns_arg = DeclareLaunchArgument(
+            name='ns',
+            default_value='',
+            description='Namespace')
+    
     gps_ip = LaunchConfiguration('gps_ip')
     local_gps_port = LaunchConfiguration('local_gps_port')
+    ns = LaunchConfiguration('ns')
     
     """Generate a launch description for a single tcpclient driver."""
     config_file = os.path.join(get_package_share_directory("nmea_navsat_driver"), "config", "nmea_tcpclient_driver.yaml")
@@ -48,7 +54,7 @@ def generate_launch_description():
     driver_node = actions.Node(
         package='nmea_navsat_driver',
         executable='nmea_tcpclient_driver',
-        namespace='obu',
+        namespace=ns,
         output='screen',
         parameters=[config_file])
     
@@ -60,6 +66,7 @@ def generate_launch_description():
     return LaunchDescription([
         gps_ip_arg,
         local_gps_port_arg,
+        ns_arg,
         gpspipe_script,
         driver_node
         ])
